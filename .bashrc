@@ -53,7 +53,33 @@ alias gl='git log --oneline --graph'
 
 # Function to switch Kitty themes using numbered input
 kitty_switch() {
-    local theme_dir="$HOME/.config/kitty/base16-black-metal-scheme"
+    local theme_dir="$HOME/.config/kitty/themes"
+    mkdir -p "$theme_dir"
+
+    # Ensure themes are present in the theme directory
+    if [ ! -f "$theme_dir/dracula.conf" ]; then
+        git clone https://github.com/dracula/kitty.git "$theme_dir/dracula"
+        cp "$theme_dir/dracula/dracula.conf" "$theme_dir/"
+    fi
+
+    if [ ! -f "$theme_dir/solarized-dark.conf" ]; then
+        echo "Creating Solarized themes..."
+        # Create solarized-dark.conf and solarized-light.conf manually
+    fi
+
+    if [ ! -f "$theme_dir/gruvbox-dark.conf" ]; then
+        echo "Creating Gruvbox themes..."
+        # Create gruvbox-dark.conf and gruvbox-light.conf manually
+    fi
+
+    if [ ! -f "$theme_dir/nord.conf" ]; then
+        curl -o "$theme_dir/nord.conf" https://raw.githubusercontent.com/arcticicestudio/nord-terminal-app/main/src/nord.conf
+    fi
+
+    if [ ! -f "$theme_dir/one-dark.conf" ]; then
+        curl -o "$theme_dir/one-dark.conf" https://raw.githubusercontent.com/one-dark/kitty/master/one-dark.conf
+    fi
+
     local themes=($(ls "$theme_dir"/*.conf | xargs -n 1 basename | sed 's/.conf//'))
 
     echo "Available themes:"
@@ -72,6 +98,7 @@ kitty_switch() {
         echo "Invalid selection. Please choose a valid number."
     fi
 }
+
 
 alias kitty-switch=kitty_switch
 
