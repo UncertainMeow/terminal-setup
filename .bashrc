@@ -56,31 +56,8 @@ kitty_switch() {
     local theme_dir="$HOME/.config/kitty/themes"
     mkdir -p "$theme_dir"
 
-    # Ensure themes are present in the theme directory
-    if [ ! -f "$theme_dir/dracula.conf" ]; then
-        git clone https://github.com/dracula/kitty.git "$theme_dir/dracula"
-        cp "$theme_dir/dracula/dracula.conf" "$theme_dir/"
-    fi
-
-    if [ ! -f "$theme_dir/solarized-dark.conf" ]; then
-        echo "Creating Solarized themes..."
-        # Create solarized-dark.conf and solarized-light.conf manually
-    fi
-
-    if [ ! -f "$theme_dir/gruvbox-dark.conf" ]; then
-        echo "Creating Gruvbox themes..."
-        # Create gruvbox-dark.conf and gruvbox-light.conf manually
-    fi
-
-    if [ ! -f "$theme_dir/nord.conf" ]; then
-        curl -o "$theme_dir/nord.conf" https://raw.githubusercontent.com/arcticicestudio/nord-terminal-app/main/src/nord.conf
-    fi
-
-    if [ ! -f "$theme_dir/one-dark.conf" ]; then
-        curl -o "$theme_dir/one-dark.conf" https://raw.githubusercontent.com/one-dark/kitty/master/one-dark.conf
-    fi
-
-    local themes=($(ls "$theme_dir"/*.conf | xargs -n 1 basename | sed 's/.conf//'))
+    # Include all .conf files from subdirectories
+    local themes=($(find "$theme_dir" -type f -name "*.conf" | xargs -n 1 basename | sed 's/.conf//'))
 
     echo "Available themes:"
     for i in "${!themes[@]}"; do
@@ -91,7 +68,7 @@ kitty_switch() {
 
     if [[ "$theme_number" -gt 0 && "$theme_number" -le "${#themes[@]}" ]]; then
         local selected_theme="${themes[$((theme_number - 1))]}"
-        ln -sf "$theme_dir/$selected_theme.conf" "$HOME/.config/kitty/colors/current-theme.conf"
+        ln -sf "$(find "$theme_dir" -type f -name "$selected_theme.conf")" "$HOME/.config/kitty/colors/current-theme.conf"
         kitty @ set-colors --all "$HOME/.config/kitty/colors/current-theme.conf" 2>/dev/null || echo "Restart Kitty to apply the new theme."
         echo "Switched to theme: $selected_theme"
     else
